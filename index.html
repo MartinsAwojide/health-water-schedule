@@ -154,10 +154,13 @@
             font-size: 1.2rem; font-weight: 700; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
             font-family: ui-monospace, monospace; z-index: 2; pointer-events: none;
         }
+        
+        .sync-container { width: 100%; text-align: center; }
         .sync-btn {
             width: 100%; justify-content: center; background: rgba(56, 189, 248, 0.1);
             border-color: var(--accent-cyan); color: var(--accent-cyan);
         }
+        .sync-timestamp { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.6rem; font-family: ui-monospace, monospace; }
 
         /* Modals & Subsystems */
         .data-list { list-style: none; }
@@ -215,15 +218,19 @@
             <!-- LEFT COLUMN: ROUTINE SEQUENCE -->
             <section class="routine-col">
                 <div class="status-badge" id="active-phase-badge">
-                    <div class="pulse"></div> <span id="phase-text">Awaiting Phase...</span>
+                    <div class="pulse"></div> <span id="phase-text">Checking System Time...</span>
                 </div>
 
+                <!-- 
+                  BUG FIX 1: Passed `true` directly into the function call to safely 
+                  signal a human click without relying on the global 'event' object. 
+                -->
                 <div class="tabs-nav" id="tabs-container">
-                    <button class="tab-btn" data-target="block-morning" onclick="switchTab('block-morning')">Morning</button>
-                    <button class="tab-btn" data-target="block-midday" onclick="switchTab('block-midday')">Mid-Day</button>
-                    <button class="tab-btn" data-target="block-lunch" onclick="switchTab('block-lunch')">Lunch</button>
-                    <button class="tab-btn" data-target="block-afternoon" onclick="switchTab('block-afternoon')">Afternoon</button>
-                    <button class="tab-btn" data-target="block-evening" onclick="switchTab('block-evening')">Evening</button>
+                    <button class="tab-btn" data-target="block-morning" onclick="switchTab('block-morning', true)">Morning</button>
+                    <button class="tab-btn" data-target="block-midday" onclick="switchTab('block-midday', true)">Mid-Day</button>
+                    <button class="tab-btn" data-target="block-lunch" onclick="switchTab('block-lunch', true)">Lunch</button>
+                    <button class="tab-btn" data-target="block-afternoon" onclick="switchTab('block-afternoon', true)">Afternoon</button>
+                    <button class="tab-btn" data-target="block-evening" onclick="switchTab('block-evening', true)">Evening</button>
                 </div>
 
                 <div class="glass-card">
@@ -305,9 +312,14 @@
                             <div class="bottle-liquid" id="main-liquid"></div>
                             <div class="bottle-text" id="water-readout">0ml</div>
                         </div>
-                        <button class="btn sync-btn" onclick="syncAppleHealth()">
-                            <span id="sync-amount">Sync 0ml to Health</span>
-                        </button>
+                        
+                        <!-- BUG FIX 2: Added explicit timestamp display below the sync button -->
+                        <div class="sync-container">
+                            <button class="btn sync-btn" onclick="syncAppleHealth()">
+                                <span id="sync-amount">Sync 0ml to Health</span>
+                            </button>
+                            <div class="sync-timestamp" id="last-sync-time">Never Synced Today</div>
+                        </div>
                     </div>
                 </div>
 
@@ -339,9 +351,9 @@
     </div>
 
     <!-- MODAL -->
-    <div id="info-modal" class="modal-overlay" onclick="closeModal(event)">
+    <div id="info-modal" class="modal-overlay" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="modal-close" onclick="closeModal(event)">&times;</button>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
             <div class="modal-section">
                 <h2>🧠 Core Principles</h2>
                 <ul>
@@ -386,7 +398,7 @@
             let checked = document.querySelectorAll('.task-check:checked').length;
             let total = checkboxes.length;
             
-            // Calculate Water (proportional to tasks done)
+            // Calculate Water
             let currentWater = Math.round((checked / total) * TOTAL_WATER_GOAL);
             let percentage = (checked / total) * 100;
             
@@ -396,9 +408,12 @@
             
             // Apple Health Sync Delta Logic
             let syncedWater = parseInt(localStorage.getItem('syncedWater')) || 0;
+            let lastSyncTime = localStorage.getItem('lastSyncTime') || 'Never Synced Today';
             let pendingSync = currentWater - syncedWater;
             
             const syncBtnText = document.getElementById('sync-amount');
+            const lastSyncDiv = document.getElementById('last-sync-time');
+            
             if (pendingSync > 0) {
                 syncBtnText.innerText = `Sync +${pendingSync}ml to Health`;
                 syncBtnText.parentElement.style.opacity = '1';
@@ -408,11 +423,13 @@
                 syncBtnText.parentElement.style.opacity = '0.5';
                 syncBtnText.parentElement.style.pointerEvents = 'none';
             }
+            
+            lastSyncDiv.innerText = lastSyncTime === 'Never Synced Today' ? lastSyncTime : `Last Sync: ${lastSyncTime}`;
 
             // Live Streak Block
             const todayBlock = document.getElementById('today-block');
             if (todayBlock) {
-                if (checked >= (total * 0.8)) { // 80% marks a successful day
+                if (checked >= (total * 0.8)) { 
                     todayBlock.classList.add('active'); todayBlock.innerHTML = '✓';
                 } else {
                     todayBlock.classList.remove('active'); todayBlock.innerHTML = 'T';
@@ -429,18 +446,22 @@
 
             if (pendingSync > 0) {
                 const isAppleDevice = /Mac|iPhone|iPod|iPad/i.test(navigator.userAgent);
+                // Capture current local time
+                const now = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
                 if (isAppleDevice) {
                     const shortcutName = "LogWater";
                     const url = `shortcuts://run-shortcut?name=${shortcutName}&input=${pendingSync}`;
                     
-                    // Mark as synced locally before redirect
                     localStorage.setItem('syncedWater', currentWater);
+                    localStorage.setItem('lastSyncTime', now);
                     updateTelemetry();
                     
                     setTimeout(() => { window.location.href = url; }, 50);
                 } else {
-                    alert(`Sync bypassed: Not an Apple Device. (Would have logged ${pendingSync}ml)`);
+                    // For desktop testing
                     localStorage.setItem('syncedWater', currentWater);
+                    localStorage.setItem('lastSyncTime', now);
                     updateTelemetry();
                 }
             }
@@ -459,19 +480,22 @@
 
             document.getElementById('phase-text').innerText = `Active: ${phaseName}`;
             
-            // Only auto-switch if user hasn't manually clicked a tab recently
-            if(!window.manualTabOverride) switchTab(activeId);
+            // Only auto-switch if user hasn't manually clicked a tab
+            if(!window.manualTabOverride) switchTab(activeId, false);
         }
 
-        function switchTab(tabId) {
+        // BUG FIX 1 applied here: Using isManual parameter instead of the global event.
+        function switchTab(tabId, isManual = false) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             
-            document.getElementById(tabId).classList.add('active');
-            document.querySelector(`[data-target="${tabId}"]`).classList.add('active');
+            const targetContent = document.getElementById(tabId);
+            const targetBtn = document.querySelector(`[data-target="${tabId}"]`);
             
-            // User initiated click vs auto-switch
-            if(event) window.manualTabOverride = true; 
+            if (targetContent) targetContent.classList.add('active');
+            if (targetBtn) targetBtn.classList.add('active');
+            
+            if (isManual) window.manualTabOverride = true; 
         }
 
         // --- 5. Midnight Reset ---
@@ -492,19 +516,19 @@
                 // Atomic Wipe
                 localStorage.setItem('dailyState', JSON.stringify({}));
                 localStorage.setItem('syncedWater', 0);
+                localStorage.setItem('lastSyncTime', ''); // Clear the timestamp
                 localStorage.setItem('lastReset', today);
                 
-                // Reset UI visually
                 checkboxes.forEach(cb => cb.checked = false);
                 renderStreaks();
                 updateTelemetry();
-                window.manualTabOverride = false; // reset override
+                window.manualTabOverride = false;
             } else if (!lastReset) {
                 localStorage.setItem('lastReset', today);
             }
         }
 
-        // --- 6. Helpers (Streaks, Theme, Modal) ---
+        // --- 6. Helpers ---
         function renderStreaks() {
             let streaks = JSON.parse(localStorage.getItem('streakHistory') || '[]');
             while (streaks.length < 6) streaks.unshift(null); 
@@ -528,7 +552,7 @@
         }
 
         function openModal() { document.getElementById('info-modal').classList.add('open'); document.body.style.overflow = 'hidden'; }
-        function closeModal(e) { document.getElementById('info-modal').classList.remove('open'); document.body.style.overflow = ''; }
+        function closeModal() { document.getElementById('info-modal').classList.remove('open'); document.body.style.overflow = ''; }
 
         // --- Bootup ---
         loadState();
