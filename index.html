@@ -106,19 +106,28 @@
         .time-label { font-size: 1.2rem; font-weight: 600; }
         .time-range { margin-left: auto; font-family: ui-monospace, monospace; color: var(--accent-cyan); font-size: 0.85rem; background: rgba(56, 189, 248, 0.1); padding: 0.2rem 0.6rem; border-radius: 6px; }
 
-        /* Checklist Items */
+        /* Base Checklist Items */
         .action-item {
             display: flex; align-items: flex-start; padding: 1rem; background: var(--bg-surface);
             border: 1px solid var(--border-light); border-radius: 12px; cursor: pointer; transition: all 0.2s; margin-bottom: 0.75rem;
         }
-        .action-item:hover { border-color: var(--accent-cyan); }
         .action-item input[type="checkbox"] { display: none; }
-        
         .custom-check {
             width: 24px; height: 24px; border: 2px solid var(--text-muted); border-radius: 6px;
             margin-right: 1rem; margin-top: 2px; position: relative; flex-shrink: 0; transition: all 0.2s;
         }
-        .action-item input[type="checkbox"]:checked + .custom-check { background-color: var(--accent-green); border-color: var(--accent-green); }
+
+        /* Color Coding: General Habit Tasks */
+        .action-item.general-task { border-left: 3px solid transparent; }
+        .action-item.general-task:hover { border-color: var(--accent-green); }
+        .action-item.general-task input[type="checkbox"]:checked + .custom-check { background-color: var(--accent-green); border-color: var(--accent-green); }
+        
+        /* Color Coding: Hydration Water Tasks */
+        .action-item.water-task { border-left: 3px solid rgba(56, 189, 248, 0.4); }
+        .action-item.water-task:hover { border-color: var(--accent-cyan); border-left-color: var(--accent-cyan); }
+        .action-item.water-task input[type="checkbox"]:checked + .custom-check { background-color: var(--accent-cyan); border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
+
+        /* Shared Checked State Styles */
         .action-item input[type="checkbox"]:checked + .custom-check::after {
             content: ''; position: absolute; left: 7px; top: 3px; width: 6px; height: 11px;
             border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
@@ -221,10 +230,6 @@
                     <div class="pulse"></div> <span id="phase-text">Checking System Time...</span>
                 </div>
 
-                <!-- 
-                  BUG FIX 1: Passed `true` directly into the function call to safely 
-                  signal a human click without relying on the global 'event' object. 
-                -->
                 <div class="tabs-nav" id="tabs-container">
                     <button class="tab-btn" data-target="block-morning" onclick="switchTab('block-morning', true)">Morning</button>
                     <button class="tab-btn" data-target="block-midday" onclick="switchTab('block-midday', true)">Mid-Day</button>
@@ -241,11 +246,11 @@
                             <span class="time-label">Initialization</span>
                             <span class="time-range">06:00 - 08:00</span>
                         </div>
-                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>1. Wake + Hydrate</strong>Consume 250-300ml immediately.</div></label>
-                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>2. Dietary Bulk</strong>Ingest seeds/aids to initiate motility.</div></label>
-                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. High-Fiber Intake</strong>Oats/Fruit | Grain/Berries.</div></label>
-                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>4. Secondary Hydration</strong>Complete ~500ml total before work.</div></label>
-                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>5. Restroom Protocol</strong>3-5 minutes (Max). No devices.</div></label>
+                        <label class="action-item water-task"><input type="checkbox" class="task-check" data-water="true"><div class="custom-check"></div><div class="action-text"><strong>1. Wake + Hydrate</strong>Consume 250-300ml immediately.</div></label>
+                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>2. Dietary Bulk</strong>Ingest seeds/aids to initiate motility.</div></label>
+                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. High-Fiber Intake</strong>Oats/Fruit | Grain/Berries.</div></label>
+                        <label class="action-item water-task"><input type="checkbox" class="task-check" data-water="true"><div class="custom-check"></div><div class="action-text"><strong>4. Secondary Hydration</strong>Complete ~500ml total before work.</div></label>
+                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>5. Restroom Protocol</strong>3-5 minutes (Max). No devices.</div></label>
                         <div class="inline-tip">💡 <strong>ADHD Hack:</strong> Phone under water glass at night.</div>
                     </div>
 
@@ -256,9 +261,9 @@
                             <span class="time-label">Deep Work Block 1</span>
                             <span class="time-range">08:00 - 12:00</span>
                         </div>
-                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>1. Visibility Anchor</strong>Stage 1L container in peripheral vision.</div></label>
-                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>2. Paced Hydration</strong>5 structural sips every 60-90m.</div></label>
-                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. State Transition</strong>2m restroom check before hyperfocus.</div></label>
+                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>1. Visibility Anchor</strong>Stage 1L container in peripheral vision.</div></label>
+                        <label class="action-item water-task"><input type="checkbox" class="task-check" data-water="true"><div class="custom-check"></div><div class="action-text"><strong>2. Paced Hydration</strong>5 structural sips every 60-90m.</div></label>
+                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. State Transition</strong>2m restroom check before hyperfocus.</div></label>
                     </div>
 
                     <!-- LUNCH TAB -->
@@ -268,8 +273,8 @@
                             <span class="time-label">Mid-Day Reset</span>
                             <span class="time-range">12:00 - 13:00</span>
                         </div>
-                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>1. Pre-meal Hydration</strong>1 full glass strictly before food.</div></label>
-                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>2. Fiber Integration</strong>Legumes, raw vegetables, or fruits.</div></label>
+                        <label class="action-item water-task"><input type="checkbox" class="task-check" data-water="true"><div class="custom-check"></div><div class="action-text"><strong>1. Pre-meal Hydration</strong>1 full glass strictly before food.</div></label>
+                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>2. Fiber Integration</strong>Legumes, raw vegetables, or fruits.</div></label>
                     </div>
 
                     <!-- AFTERNOON TAB -->
@@ -279,9 +284,9 @@
                             <span class="time-label">Deep Work Block 2</span>
                             <span class="time-range">13:00 - 18:00</span>
                         </div>
-                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>1. Stage 2 Hydration</strong>Refill container for afternoon.</div></label>
-                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>2. Kinetic Break</strong>15-20 min locomotion for motility.</div></label>
-                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. Functional Snack</strong>Skin-on fruit or grain/seeds.</div></label>
+                        <label class="action-item water-task"><input type="checkbox" class="task-check" data-water="true"><div class="custom-check"></div><div class="action-text"><strong>1. Stage 2 Hydration</strong>Refill container for afternoon.</div></label>
+                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>2. Kinetic Break</strong>15-20 min locomotion for motility.</div></label>
+                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. Functional Snack</strong>Skin-on fruit or grain/seeds.</div></label>
                     </div>
 
                     <!-- EVENING TAB -->
@@ -291,9 +296,9 @@
                             <span class="time-label">Wind-Down</span>
                             <span class="time-range">18:00 - 22:00</span>
                         </div>
-                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>1. Dinner Composition</strong>Minimum 1 serving of veg/legumes.</div></label>
-                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>2. Hydration Taper</strong>Cease intake 1 hour before sleep.</div></label>
-                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. Setup for Tomorrow</strong>Stage morning glass by the bed.</div></label>
+                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>1. Dinner Composition</strong>Minimum 1 serving of veg/legumes.</div></label>
+                        <label class="action-item water-task"><input type="checkbox" class="task-check" data-water="true"><div class="custom-check"></div><div class="action-text"><strong>2. Hydration Taper</strong>Cease intake 1 hour before sleep.</div></label>
+                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. Setup for Tomorrow</strong>Stage morning glass by the bed.</div></label>
                         <div class="inline-tip">💡 <strong>Phone Rule:</strong> Use physical timer (5m) for evening restroom.</div>
                     </div>
                 </div>
@@ -313,7 +318,6 @@
                             <div class="bottle-text" id="water-readout">0ml</div>
                         </div>
                         
-                        <!-- BUG FIX 2: Added explicit timestamp display below the sync button -->
                         <div class="sync-container">
                             <button class="btn sync-btn" onclick="syncAppleHealth()">
                                 <span id="sync-amount">Sync 0ml to Health</span>
@@ -366,20 +370,32 @@
     </div>
 
     <script>
-        // --- 1. Atomic State Management ---
+        // --- 1. Atomic State Management & Memory Protection ---
         const checkboxes = document.querySelectorAll('.task-check');
         const TOTAL_WATER_GOAL = 3000;
         
+        // Bulletproof JSON Parser to prevent crash if old/corrupt data exists in localStorage
+        function safeJSONParse(key, fallback) {
+            try {
+                const item = localStorage.getItem(key);
+                return item ? JSON.parse(item) : fallback;
+            } catch(e) {
+                console.error(`Cleared corrupt memory for: ${key}`);
+                return fallback;
+            }
+        }
+        
         function loadState() {
-            // Load theme
+            // Safe Theme Loading
             const isLight = localStorage.getItem('theme') === 'light';
-            if (isLight || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+            const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+            if (isLight || (!localStorage.getItem('theme') && prefersLight)) {
                 document.body.classList.add('light-theme');
                 document.getElementById('theme-btn').innerText = '☀️';
             }
 
-            // Load Checkboxes
-            let state = JSON.parse(localStorage.getItem('dailyState')) || {};
+            // Safe Checkbox State Loading
+            let state = safeJSONParse('dailyState', {});
             checkboxes.forEach((cb, index) => {
                 cb.checked = state[`item_${index}`] || false;
                 cb.addEventListener('change', () => {
@@ -395,12 +411,18 @@
 
         // --- 2. Central Hydration Telemetry ---
         function updateTelemetry() {
-            let checked = document.querySelectorAll('.task-check:checked').length;
-            let total = checkboxes.length;
+            // Overall task completion for streaks
+            let checkedAll = document.querySelectorAll('.task-check:checked').length;
+            let totalAll = checkboxes.length;
             
-            // Calculate Water
-            let currentWater = Math.round((checked / total) * TOTAL_WATER_GOAL);
-            let percentage = (checked / total) * 100;
+            // Explicitly filter for ONLY Water tasks for hydration math
+            let waterCheckboxes = document.querySelectorAll('.task-check[data-water="true"]');
+            let checkedWater = document.querySelectorAll('.task-check[data-water="true"]:checked').length;
+            let totalWater = waterCheckboxes.length;
+            
+            // Safe Calculate Water (prevent dividing by zero)
+            let currentWater = totalWater > 0 ? Math.round((checkedWater / totalWater) * TOTAL_WATER_GOAL) : 0;
+            let percentage = totalWater > 0 ? (checkedWater / totalWater) * 100 : 0;
             
             // Update UI
             document.getElementById('main-liquid').style.height = `${percentage}%`;
@@ -429,7 +451,7 @@
             // Live Streak Block
             const todayBlock = document.getElementById('today-block');
             if (todayBlock) {
-                if (checked >= (total * 0.8)) { 
+                if (checkedAll >= (totalAll * 0.8)) { 
                     todayBlock.classList.add('active'); todayBlock.innerHTML = '✓';
                 } else {
                     todayBlock.classList.remove('active'); todayBlock.innerHTML = 'T';
@@ -439,14 +461,16 @@
 
         // --- 3. Apple Health Sync Execution ---
         function syncAppleHealth() {
-            let checked = document.querySelectorAll('.task-check:checked').length;
-            let currentWater = Math.round((checked / checkboxes.length) * TOTAL_WATER_GOAL);
+            let waterCheckboxes = document.querySelectorAll('.task-check[data-water="true"]');
+            let checkedWater = document.querySelectorAll('.task-check[data-water="true"]:checked').length;
+            let totalWater = waterCheckboxes.length;
+            let currentWater = totalWater > 0 ? Math.round((checkedWater / totalWater) * TOTAL_WATER_GOAL) : 0;
+            
             let syncedWater = parseInt(localStorage.getItem('syncedWater')) || 0;
             let pendingSync = currentWater - syncedWater;
 
             if (pendingSync > 0) {
                 const isAppleDevice = /Mac|iPhone|iPod|iPad/i.test(navigator.userAgent);
-                // Capture current local time
                 const now = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 
                 if (isAppleDevice) {
@@ -459,7 +483,6 @@
                     
                     setTimeout(() => { window.location.href = url; }, 50);
                 } else {
-                    // For desktop testing
                     localStorage.setItem('syncedWater', currentWater);
                     localStorage.setItem('lastSyncTime', now);
                     updateTelemetry();
@@ -469,7 +492,12 @@
 
         // --- 4. Chronometer & Tab Auto-Switch ---
         function runChronometer() {
-            const hour = new Date().getHours();
+            const now = new Date();
+            const hour = now.getHours();
+            
+            // Explicitly grab the localized time string to show the user it is working
+            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
             let activeId = 'block-evening';
             let phaseName = 'Evening Wind-Down';
 
@@ -478,13 +506,11 @@
             else if (hour >= 12 && hour < 13) { activeId = 'block-lunch'; phaseName = 'Mid-Day Reset'; }
             else if (hour >= 13 && hour < 18) { activeId = 'block-afternoon'; phaseName = 'Deep Work 2'; }
 
-            document.getElementById('phase-text').innerText = `Active: ${phaseName}`;
+            document.getElementById('phase-text').innerText = `${timeString} - Active: ${phaseName}`;
             
-            // Only auto-switch if user hasn't manually clicked a tab
             if(!window.manualTabOverride) switchTab(activeId, false);
         }
 
-        // BUG FIX 1 applied here: Using isManual parameter instead of the global event.
         function switchTab(tabId, isManual = false) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -504,11 +530,11 @@
             const today = new Date().toDateString();
 
             if (lastReset && lastReset !== today) {
-                let checked = document.querySelectorAll('.task-check:checked').length;
-                let total = checkboxes.length;
-                const yesterdaySuccess = checked >= (total * 0.8);
+                let checkedAll = document.querySelectorAll('.task-check:checked').length;
+                let totalAll = checkboxes.length;
+                const yesterdaySuccess = checkedAll >= (totalAll * 0.8);
                 
-                let streaks = JSON.parse(localStorage.getItem('streakHistory') || '[]');
+                let streaks = safeJSONParse('streakHistory', []);
                 streaks.push(yesterdaySuccess);
                 if (streaks.length > 6) streaks.shift();
                 localStorage.setItem('streakHistory', JSON.stringify(streaks));
@@ -516,7 +542,7 @@
                 // Atomic Wipe
                 localStorage.setItem('dailyState', JSON.stringify({}));
                 localStorage.setItem('syncedWater', 0);
-                localStorage.setItem('lastSyncTime', ''); // Clear the timestamp
+                localStorage.setItem('lastSyncTime', ''); 
                 localStorage.setItem('lastReset', today);
                 
                 checkboxes.forEach(cb => cb.checked = false);
@@ -530,7 +556,7 @@
 
         // --- 6. Helpers ---
         function renderStreaks() {
-            let streaks = JSON.parse(localStorage.getItem('streakHistory') || '[]');
+            let streaks = safeJSONParse('streakHistory', []);
             while (streaks.length < 6) streaks.unshift(null); 
             streakContainer.innerHTML = '';
             streaks.forEach((daySuccess) => {
@@ -554,7 +580,7 @@
         function openModal() { document.getElementById('info-modal').classList.add('open'); document.body.style.overflow = 'hidden'; }
         function closeModal() { document.getElementById('info-modal').classList.remove('open'); document.body.style.overflow = ''; }
 
-        // --- Bootup ---
+        // --- Bootup Sequence ---
         loadState();
         checkReset();
         runChronometer();
