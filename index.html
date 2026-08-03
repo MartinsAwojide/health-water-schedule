@@ -246,10 +246,10 @@
                             <span class="time-label">Initialization</span>
                             <span class="time-range">06:00 - 08:00</span>
                         </div>
-                        <label class="action-item water-task"><input type="checkbox" class="task-check" data-water="true"><div class="custom-check"></div><div class="action-text"><strong>1. Wake + Hydrate</strong>Consume 250-300ml immediately.</div></label>
+                        <label class="action-item water-task"><input type="checkbox" class="task-check" data-water="true"><div class="custom-check"></div><div class="action-text"><strong>1. Wake + Hydrate</strong>Consume 1 to 1.2 standard cups immediately.</div></label>
                         <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>2. Dietary Bulk</strong>Ingest seeds/aids to initiate motility.</div></label>
                         <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. High-Fiber Intake</strong>Oats/Fruit | Grain/Berries.</div></label>
-                        <label class="action-item water-task"><input type="checkbox" class="task-check" data-water="true"><div class="custom-check"></div><div class="action-text"><strong>4. Secondary Hydration</strong>Complete ~500ml total before work.</div></label>
+                        <label class="action-item water-task"><input type="checkbox" class="task-check" data-water="true"><div class="custom-check"></div><div class="action-text"><strong>4. Secondary Hydration</strong>Complete ~2 standard cups total before work.</div></label>
                         <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>5. Restroom Protocol</strong>3-5 minutes (Max). No devices.</div></label>
                         <div class="inline-tip">💡 <strong>ADHD Hack:</strong> Phone under water glass at night.</div>
                     </div>
@@ -261,7 +261,7 @@
                             <span class="time-label">Deep Work Block 1</span>
                             <span class="time-range">08:00 - 12:00</span>
                         </div>
-                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>1. Visibility Anchor</strong>Stage 1L container in peripheral vision.</div></label>
+                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>1. Visibility Anchor</strong>Stage a 4-cup container in peripheral vision.</div></label>
                         <label class="action-item water-task"><input type="checkbox" class="task-check" data-water="true"><div class="custom-check"></div><div class="action-text"><strong>2. Paced Hydration</strong>5 structural sips every 60-90m.</div></label>
                         <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. State Transition</strong>2m restroom check before hyperfocus.</div></label>
                     </div>
@@ -372,6 +372,7 @@
     <script>
         // --- 1. Atomic State Management & Memory Protection ---
         const checkboxes = document.querySelectorAll('.task-check');
+        const streakContainer = document.getElementById('streak-container'); // This fixes both bugs!
         const TOTAL_WATER_GOAL = 3000;
         
         // Bulletproof JSON Parser to prevent crash if old/corrupt data exists in localStorage
