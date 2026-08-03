@@ -172,11 +172,14 @@
         }
         @keyframes checkPop { to { transform: rotate(45deg) scale(1); } }
 
-        /* Animated Strikethrough */
-        .action-text { flex: 1; font-size: 0.95rem; color: var(--text-muted); transition: color 0.3s; }
+        /* Animated Strikethrough & Verbose Formatting */
+        .action-text { flex: 1; color: var(--text-muted); transition: color 0.3s; }
         .action-text strong { 
             display: inline-block; position: relative; color: var(--text-main); 
             font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; transition: color 0.3s; 
+        }
+        .action-text span {
+            display: block; margin-top: 0.35rem; font-size: 0.9rem; line-height: 1.5;
         }
         .action-text strong::after {
             content: ''; position: absolute; left: 0; top: 50%; height: 2px; width: 0;
@@ -189,6 +192,7 @@
             margin: 1rem 0 0.5rem 0; padding: 0.85rem 1.2rem; background: rgba(245, 158, 11, 0.05);
             border-left: 2px solid var(--accent-amber); border-radius: 0 8px 8px 0; font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: flex-start; gap: 0.75rem;
         }
+        .inline-tip strong { color: var(--text-main); font-weight: 600; }
 
         /* Right Column: Telemetry (Sticky) */
         .metrics-col { position: sticky; top: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
@@ -209,7 +213,7 @@
         .bottle-liquid {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 0%;
             background: linear-gradient(180deg, var(--accent-cyan) 0%, #0284c7 100%);
-            transition: height 1s cubic-bezier(0.34, 1.56, 0.64, 1); /* Fluid bounce */
+            transition: height 1s cubic-bezier(0.34, 1.56, 0.64, 1);
             border-top: 2px solid rgba(255,255,255,0.4);
         }
         .bottle-text {
@@ -267,7 +271,7 @@
                 flex-direction: row; position: fixed; bottom: 0; left: 0; width: 100%;
                 background: var(--nav-bg); backdrop-filter: blur(16px);
                 border-top: 1px solid var(--border-light); z-index: 100;
-                padding: 0.5rem 0.5rem 1.5rem 0.5rem; /* Extra padding for iOS home bar */
+                padding: 0.5rem 0.5rem 1.5rem 0.5rem;
                 justify-content: space-around; margin: 0; top: auto;
             }
             .tab-btn {
@@ -318,23 +322,38 @@
             <!-- LEFT COLUMN: NAVIGATION -->
             <nav class="tabs-nav" id="tabs-container">
                 <button class="tab-btn" data-target="block-morning" onclick="switchTab('block-morning', true)">
-                    <span class="tab-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><path d="M4.93 10.93l4.24 4.24"/><path d="M2 18h20"/><path d="M20 22H4"/><path d="M19.07 10.93l-4.24 4.24"/></svg></span>
+                    <span class="tab-icon">
+                        <!-- Interesting Sunrise Icon -->
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><path d="M4.93 10.93l4.24 4.24"/><path d="M2 18h20"/><path d="M20 22H4"/><path d="M19.07 10.93l-4.24 4.24"/><path d="M8 22l4-4 4 4"/></svg>
+                    </span>
                     <span>Morning</span>
                 </button>
                 <button class="tab-btn" data-target="block-midday" onclick="switchTab('block-midday', true)">
-                    <span class="tab-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></span>
-                    <span>Mid-Day</span>
+                    <span class="tab-icon">
+                        <!-- Crosshair Target (Deep Work/Focus) -->
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                    </span>
+                    <span>Mid-Morning</span>
                 </button>
                 <button class="tab-btn" data-target="block-lunch" onclick="switchTab('block-lunch', true)">
-                    <span class="tab-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></span>
+                    <span class="tab-icon">
+                        <!-- Utensils (Reset) -->
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+                    </span>
                     <span>Lunch</span>
                 </button>
                 <button class="tab-btn" data-target="block-afternoon" onclick="switchTab('block-afternoon', true)">
-                    <span class="tab-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><path d="M6 2v2"/><path d="M10 2v2"/><path d="M14 2v2"/></svg></span>
+                    <span class="tab-icon">
+                        <!-- Zap/Energy Bolt (Pushing through afternoon) -->
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    </span>
                     <span>Afternoon</span>
                 </button>
                 <button class="tab-btn" data-target="block-evening" onclick="switchTab('block-evening', true)">
-                    <span class="tab-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span>
+                    <span class="tab-icon">
+                        <!-- Crescent Moon with Stars -->
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/><path d="M18 4l1 1 1-1-1-1-1 1z"/><path d="M22 8l.5.5.5-.5-.5-.5-.5.5z"/></svg>
+                    </span>
                     <span>Evening</span>
                 </button>
             </nav>
@@ -349,69 +368,219 @@
                     <!-- MORNING TAB -->
                     <div id="block-morning" class="tab-content">
                         <div class="time-header">
-                            <span class="time-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><path d="M4.93 10.93l4.24 4.24"/><path d="M2 18h20"/><path d="M20 22H4"/><path d="M19.07 10.93l-4.24 4.24"/></svg></span>
-                            <span class="time-label">Initialization</span>
+                            <span class="time-icon">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><path d="M4.93 10.93l4.24 4.24"/><path d="M2 18h20"/><path d="M20 22H4"/><path d="M19.07 10.93l-4.24 4.24"/><path d="M8 22l4-4 4 4"/></svg>
+                            </span>
+                            <span class="time-label">Morning Routine</span>
                             <span class="time-range">06:00 - 08:00</span>
                         </div>
-                        <label class="action-item water-task"><input type="checkbox" class="task-check" data-water="true"><div class="custom-check"></div><div class="action-text"><strong>1. Wake + Hydrate</strong>Consume 1 to 1.2 standard cups immediately.</div></label>
-                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>2. Dietary Bulk</strong>Ingest seeds/aids to initiate motility.</div></label>
-                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. High-Fiber Intake</strong>Oats/Fruit | Grain/Berries.</div></label>
-                        <label class="action-item water-task"><input type="checkbox" class="task-check" data-water="true"><div class="custom-check"></div><div class="action-text"><strong>4. Secondary Hydration</strong>Complete ~2 standard cups total before work.</div></label>
-                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>5. Restroom Protocol</strong>3-5 minutes (Max). No devices.</div></label>
+                        <label class="action-item water-task">
+                            <input type="checkbox" class="task-check" data-water="true">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>1. Wake + Hydrate (before anything else)</strong>
+                                <span>Drink 1 full glass (~1 standard cup) of water immediately. Keep glass by bed the night before.</span>
+                            </div>
+                        </label>
+                        <label class="action-item general-task">
+                            <input type="checkbox" class="task-check">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>2. Take morning medications/supplements</strong>
+                                <span>If prescribed: stool softener (docusate) or PEG. Plus any other meds.</span>
+                            </div>
+                        </label>
+                        <label class="action-item general-task">
+                            <input type="checkbox" class="task-check">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>3. High-fiber breakfast</strong>
+                                <span>Choose: Oats + fruit | Whole grain cereal + berries | Whole wheat toast + avocado<br>→ Aim for 8-10g fiber</span>
+                            </div>
+                        </label>
+                        <label class="action-item water-task">
+                            <input type="checkbox" class="task-check" data-water="true">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>4. Drink another glass of water with breakfast</strong>
+                                <span>That's ~2 standard cups total before you start work.</span>
+                            </div>
+                        </label>
+                        <label class="action-item general-task">
+                            <input type="checkbox" class="task-check">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>5. "Bathroom opportunity" 15-20 min after breakfast</strong>
+                                <span>Sit for max 3-5 minutes. <strong>NO PHONE.</strong> If nothing comes, get up. No straining ever.</span>
+                            </div>
+                        </label>
                         <div class="inline-tip">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2v1"/><path d="M12 7v1"/><path d="M15 4l-1 1"/><path d="M9 4l1 1"/><path d="M18 9l-1-1"/><path d="M6 9l1-1"/><path d="M22 12h-1"/><path d="M3 12h-1"/><path d="M19 12a7 7 0 0 0-14 0c0 4-2 6-2 6h18s-2-2-2-6Z"/></svg>
-                            <div><strong>ADHD Hack:</strong> Place phone securely under water glass at night.</div>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2v1"/><path d="M12 7v1"/><path d="M15 4l-1 1"/><path d="M9 4l1 1"/><path d="M18 9l-1-1"/><path d="M6 9l1-1"/><path d="M22 12h-1"/><path d="M3 12h-1"/><path d="M19 12a7 7 0 0 0-14 0c0 4-2 6-2 6h18s-2-2-2-6Z"/></svg>
+                            <div><strong>💡 ADHD Hack:</strong> Set your water bottle/glass on top of your phone in the morning so you HAVE to pick it up and drink.</div>
                         </div>
                     </div>
 
                     <!-- MIDDAY TAB -->
                     <div id="block-midday" class="tab-content">
                         <div class="time-header">
-                            <span class="time-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></span>
-                            <span class="time-label">Deep Work Block 1</span>
+                            <span class="time-icon">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                            </span>
+                            <span class="time-label">Mid-Morning</span>
                             <span class="time-range">08:00 - 12:00</span>
                         </div>
-                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>1. Visibility Anchor</strong>Stage a 4-cup container in peripheral vision.</div></label>
-                        <label class="action-item water-task"><input type="checkbox" class="task-check" data-water="true"><div class="custom-check"></div><div class="action-text"><strong>2. Paced Hydration</strong>5 structural sips every 60-90m.</div></label>
-                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. State Transition</strong>2m restroom check before hyperfocus.</div></label>
+                        <label class="action-item general-task">
+                            <input type="checkbox" class="task-check">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>1. Fill your 3 to 4-cup water bottle</strong>
+                                <span>Keep it visible at your workstation. Goal: finish it by lunch.</span>
+                            </div>
+                        </label>
+                        <label class="action-item water-task">
+                            <input type="checkbox" class="task-check" data-water="true">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>2. Every 60-90 min: Take 5 sips</strong>
+                                <span>Use timer/app/smartwatch if helpful. Or tie to task transitions.</span>
+                            </div>
+                        </label>
+                        <label class="action-item general-task">
+                            <input type="checkbox" class="task-check">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>3. Before starting deep work: quick bathroom check</strong>
+                                <span>Even if you "don't feel it," sit for 2 min. Prevents missing signals during hyperfocus.</span>
+                            </div>
+                        </label>
+                        <div class="inline-tip">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            <div><strong>💡 Visual Cue:</strong> Put a sticky note on your monitor: "Sip water every time you see this"</div>
+                        </div>
                     </div>
 
                     <!-- LUNCH TAB -->
                     <div id="block-lunch" class="tab-content">
                         <div class="time-header">
-                            <span class="time-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></span>
-                            <span class="time-label">Mid-Day Reset</span>
+                            <span class="time-icon">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+                            </span>
+                            <span class="time-label">Lunch</span>
                             <span class="time-range">12:00 - 13:00</span>
                         </div>
-                        <label class="action-item water-task"><input type="checkbox" class="task-check" data-water="true"><div class="custom-check"></div><div class="action-text"><strong>1. Pre-meal Hydration</strong>1 full glass strictly before food.</div></label>
-                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>2. Fiber Integration</strong>Legumes, raw vegetables, or fruits.</div></label>
+                        <label class="action-item water-task">
+                            <input type="checkbox" class="task-check" data-water="true">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>1. Drink 1 full glass BEFORE eating</strong>
+                                <span>Non-negotiable anchor: water before food.</span>
+                            </div>
+                        </label>
+                        <label class="action-item general-task">
+                            <input type="checkbox" class="task-check">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>2. Include fiber: legumes/beans OR vegetables OR fruit</strong>
+                                <span>Examples: Lentil stew, bean salad, veggie-packed meal, side of fruit.</span>
+                            </div>
+                        </label>
+                        <label class="action-item water-task">
+                            <input type="checkbox" class="task-check" data-water="true">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>3. Another glass during/after meal</strong>
+                                <span>That's 2 glasses at lunch = ~2 standard cups.</span>
+                            </div>
+                        </label>
                     </div>
 
                     <!-- AFTERNOON TAB -->
                     <div id="block-afternoon" class="tab-content">
                         <div class="time-header">
-                            <span class="time-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><path d="M6 2v2"/><path d="M10 2v2"/><path d="M14 2v2"/></svg></span>
-                            <span class="time-label">Deep Work Block 2</span>
+                            <span class="time-icon">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            </span>
+                            <span class="time-label">Afternoon</span>
                             <span class="time-range">13:00 - 18:00</span>
                         </div>
-                        <label class="action-item water-task"><input type="checkbox" class="task-check" data-water="true"><div class="custom-check"></div><div class="action-text"><strong>1. Stage 2 Hydration</strong>Refill container for afternoon.</div></label>
-                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>2. Kinetic Break</strong>15-20 min locomotion for motility.</div></label>
-                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. Functional Snack</strong>Skin-on fruit or grain/seeds.</div></label>
+                        <label class="action-item water-task">
+                            <input type="checkbox" class="task-check" data-water="true">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>1. Refill water bottle #2</strong>
+                                <span>Another 3 to 4 cups to sip through afternoon.</span>
+                            </div>
+                        </label>
+                        <label class="action-item general-task">
+                            <input type="checkbox" class="task-check">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>2. Movement break: 15-20 min walk</strong>
+                                <span>Helps gut motility. Can be after lunch or mid-afternoon.</span>
+                            </div>
+                        </label>
+                        <label class="action-item general-task">
+                            <input type="checkbox" class="task-check">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>3. Snack with fiber if hungry</strong>
+                                <span>Apple, pear, nuts, whole grain crackers + hummus.</span>
+                            </div>
+                        </label>
+                        <label class="action-item general-task">
+                            <input type="checkbox" class="task-check">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>4. Bathroom check before leaving work/transitioning activities</strong>
+                                <span>Another preventive "opportunity" to avoid missing signals.</span>
+                            </div>
+                        </label>
                     </div>
 
                     <!-- EVENING TAB -->
                     <div id="block-evening" class="tab-content">
                         <div class="time-header">
-                            <span class="time-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span>
-                            <span class="time-label">Wind-Down</span>
+                            <span class="time-icon">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/><path d="M18 4l1 1 1-1-1-1-1 1z"/><path d="M22 8l.5.5.5-.5-.5-.5-.5.5z"/></svg>
+                            </span>
+                            <span class="time-label">Evening</span>
                             <span class="time-range">18:00 - 22:00</span>
                         </div>
-                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>1. Dinner Composition</strong>Minimum 1 serving of veg/legumes.</div></label>
-                        <label class="action-item water-task"><input type="checkbox" class="task-check" data-water="true"><div class="custom-check"></div><div class="action-text"><strong>2. Hydration Taper</strong>Cease intake 1 hour before sleep.</div></label>
-                        <label class="action-item general-task"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. Setup for Tomorrow</strong>Stage morning glass by the bed.</div></label>
+                        <label class="action-item general-task">
+                            <input type="checkbox" class="task-check">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>1. Dinner: include vegetables/legumes</strong>
+                                <span>At least 1 serving of cooked veg or beans. Frozen/canned is fine.</span>
+                            </div>
+                        </label>
+                        <label class="action-item water-task">
+                            <input type="checkbox" class="task-check" data-water="true">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>2. Water with dinner</strong>
+                                <span>1 glass minimum.</span>
+                            </div>
+                        </label>
+                        <label class="action-item general-task">
+                            <input type="checkbox" class="task-check">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>3. Evening sitz bath (if you had bleeding today)</strong>
+                                <span>10-15 min in warm water. Can pair with post-shower routine to anchor it.</span>
+                            </div>
+                        </label>
+                        <label class="action-item general-task">
+                            <input type="checkbox" class="task-check">
+                            <div class="custom-check"></div>
+                            <div class="action-text">
+                                <strong>4. Prep for tomorrow morning</strong>
+                                <span>Fill water glass and put it by bed. Lay out morning meds/supplements.</span>
+                            </div>
+                        </label>
                         <div class="inline-tip">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
-                            <div><strong>Phone Rule:</strong> Use physical timer (5m) for evening restroom.</div>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+                            <div><strong>💡 Phone Rule:</strong> If you use the bathroom in evening, <strong>leave phone outside</strong>. Use a visible timer (kitchen timer, watch) for 5 min max.</div>
                         </div>
                     </div>
                 </div>
@@ -480,9 +649,11 @@
                     Core Principles
                 </h2>
                 <ul>
-                    <li><strong>External cues replace internal signals:</strong> Rely on visible triggers over physical urges.</li>
-                    <li><strong>Anchor to actions you already do:</strong> Tie habits to routines.</li>
-                    <li><strong>Short toilet time (≤5 min):</strong> No phone = no prolonged pressure.</li>
+                    <li><strong>External cues replace internal signals:</strong> You can't rely on "feeling thirsty" or "feeling the urge"</li>
+                    <li><strong>Anchor to actions you already do:</strong> Tie new habits to existing routines</li>
+                    <li><strong>Visual > mental:</strong> Keep water bottle in sight, use timers, check boxes</li>
+                    <li><strong>Short toilet time (≤5 min):</strong> No phone = no prolonged hemorrhoid pressure</li>
+                    <li><strong>Soft stools = no bleeding:</strong> Everything flows from this</li>
                 </ul>
             </div>
         </div>
