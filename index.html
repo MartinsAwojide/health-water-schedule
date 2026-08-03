@@ -817,33 +817,57 @@
             if (isManual) window.manualTabOverride = true; 
         }
 
-        // --- 5. Midnight Reset ---
+        // --- 5. Midnight Reset (With Calendar Gap Detection) ---
         function checkReset() {
-            const lastReset = localStorage.getItem('lastReset');
-            const today = new Date().toDateString();
+            const lastResetStr = localStorage.getItem('lastReset');
+            const todayDate = new Date();
+            const todayStr = todayDate.toDateString();
 
-            if (lastReset && lastReset !== today) {
-                let checkedAll = document.querySelectorAll('.task-check:checked').length;
-                let totalAll = checkboxes.length;
-                const yesterdaySuccess = checkedAll >= (totalAll * 0.8);
+            if (lastResetStr && lastResetStr !== todayStr) {
+                // Calculate exactly how many days have passed
+                const lastResetDate = new Date(lastResetStr);
                 
-                let streaks = safeJSONParse('streakHistory', []);
-                streaks.push(yesterdaySuccess);
-                if (streaks.length > 6) streaks.shift();
-                localStorage.setItem('streakHistory', JSON.stringify(streaks));
+                // Normalize dates to midnight for accurate day math
+                lastResetDate.setHours(0, 0, 0, 0);
+                todayDate.setHours(0, 0, 0, 0);
+                
+                const diffTime = Math.abs(todayDate - lastResetDate);
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-                // Atomic Wipe
-                localStorage.setItem('dailyState', JSON.stringify({}));
-                localStorage.setItem('syncedWater', 0);
-                localStorage.setItem('lastSyncTime', ''); 
-                localStorage.setItem('lastReset', today);
-                
-                checkboxes.forEach(cb => cb.checked = false);
-                renderStreaks();
-                updateTelemetry();
-                window.manualTabOverride = false;
-            } else if (!lastReset) {
-                localStorage.setItem('lastReset', today);
+                if (diffDays > 0) {
+                    let streaks = safeJSONParse('streakHistory', []);
+                    
+                    // 1. Score the saved data (belongs to the last active day)
+                    let checkedAll = document.querySelectorAll('.task-check:checked').length;
+                    let totalAll = checkboxes.length;
+                    const pastSuccess = checkedAll >= (totalAll * 0.8);
+                    streaks.push(pastSuccess);
+
+                    // 2. Inject 'false' for any completely skipped days
+                    for (let i = 1; i < diffDays; i++) {
+                        streaks.push(false);
+                    }
+
+                    // 3. Trim array to strictly 6 days of history
+                    while (streaks.length > 6) {
+                        streaks.shift();
+                    }
+                    localStorage.setItem('streakHistory', JSON.stringify(streaks));
+
+                    // 4. Atomic Wipe for the new day
+                    localStorage.setItem('dailyState', JSON.stringify({}));
+                    localStorage.setItem('syncedWater', 0);
+                    localStorage.setItem('lastSyncTime', ''); 
+                    localStorage.setItem('lastReset', todayStr);
+                    
+                    checkboxes.forEach(cb => cb.checked = false);
+                    renderStreaks();
+                    updateTelemetry();
+                    window.manualTabOverride = false;
+                }
+            } else if (!lastResetStr) {
+                // First ever bootup
+                localStorage.setItem('lastReset', todayStr);
             }
         }
 
