@@ -3,28 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- PWA Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     
-    <title>Daily Wellness Protocol</title>
+    <title>Daily Protocol</title>
     <style>
-        /* CSS Variables for Premium Dark Theme */
+        /* CSS Variable Architecture for Theming */
         :root {
+            /* Dark Theme (Default Base) */
             --bg-base: #020617;
             --bg-surface: rgba(30, 41, 59, 0.7);
-            --bg-card: rgba(15, 23, 42, 0.6);
+            --bg-card: rgba(15, 23, 42, 0.8);
             --border-light: rgba(148, 163, 184, 0.15);
-            --border-active: rgba(56, 189, 248, 0.5);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --accent-cyan: #38bdf8;
             --accent-green: #10b981;
             --accent-amber: #f59e0b;
             --accent-red: #ef4444;
-            --accent-glow: 0 0 20px rgba(56, 189, 248, 0.2);
+            --bottle-bg: rgba(0, 0, 0, 0.3);
+            --shadow-card: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
+
+        body.light-theme {
+            --bg-base: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --border-light: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-cyan: #0284c7;
+            --accent-green: #059669;
+            --bottle-bg: #f1f5f9;
+            --shadow-card: 0 10px 30px -10px rgba(0,0,0,0.05);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -32,197 +43,170 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-base);
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.05) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
-            background-attachment: fixed;
             color: var(--text-main);
             padding: 2rem 1rem;
             line-height: 1.6;
             min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .dashboard-container { max-width: 1200px; margin: 0 auto; }
 
-        /* Header Section */
+        /* Header */
         header {
-            text-align: left; margin-bottom: 2rem; padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-light);
             display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;
+            margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-light);
         }
-
-        h1 {
-            font-size: 2.2rem; font-weight: 700; letter-spacing: -0.03em;
-            background: linear-gradient(to right, #f8fafc, #94a3b8);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
+        h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.03em; color: var(--text-main); transition: color 0.3s; }
         .subtitle { color: var(--text-muted); font-size: 1rem; margin-top: 0.25rem; }
-
-        .btn-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+        
+        .header-controls { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
         .btn {
             background: var(--bg-surface); color: var(--text-main); border: 1px solid var(--border-light);
             padding: 0.6rem 1.2rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
-            cursor: pointer; backdrop-filter: blur(10px); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer; backdrop-filter: blur(10px); transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;
         }
-        .btn:hover { border-color: var(--accent-cyan); box-shadow: var(--accent-glow); transform: translateY(-2px); }
+        .btn:hover { border-color: var(--accent-cyan); transform: translateY(-2px); }
+        .theme-toggle { padding: 0.6rem; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0.8rem;
+            background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-green);
+            border-radius: 20px; font-size: 0.8rem; color: var(--accent-green); font-weight: 600; margin-bottom: 1rem;
+        }
+        .pulse { width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%; box-shadow: 0 0 10px var(--accent-green); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
 
         /* Grid Layout */
         .grid-layout { display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem; align-items: start; }
 
-        /* Glassmorphism Cards */
-        .glass-card {
-            background: var(--bg-card); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--border-light); border-radius: 16px; padding: 1.5rem;
-            margin-bottom: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: border-color 0.3s ease;
+        /* Tabs System */
+        .tabs-nav { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 0.5rem; scrollbar-width: none; }
+        .tabs-nav::-webkit-scrollbar { display: none; }
+        .tab-btn {
+            background: transparent; color: var(--text-muted); border: 1px solid var(--border-light);
+            padding: 0.75rem 1.2rem; border-radius: 10px; font-size: 0.9rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; white-space: nowrap;
         }
-        .glass-card:hover { border-color: rgba(148, 163, 184, 0.3); }
+        .tab-btn:hover { border-color: var(--text-muted); }
+        .tab-btn.active { background: var(--accent-cyan); color: #fff; border-color: var(--accent-cyan); box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3); }
 
-        /* Time Blocks */
+        /* Cards & Time Blocks */
+        .glass-card {
+            background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--border-light);
+            border-radius: 16px; padding: 1.5rem; box-shadow: var(--shadow-card); transition: all 0.3s;
+        }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
         .time-header { display: flex; align-items: center; margin-bottom: 1.5rem; }
         .time-icon { font-size: 1.5rem; margin-right: 1rem; background: var(--bg-surface); padding: 0.5rem; border-radius: 10px; border: 1px solid var(--border-light); }
         .time-label { font-size: 1.2rem; font-weight: 600; }
-        .time-range { 
-            margin-left: auto; font-family: ui-monospace, monospace; color: var(--accent-cyan);
-            font-size: 0.85rem; background: rgba(56, 189, 248, 0.1); padding: 0.2rem 0.6rem; border-radius: 6px;
-        }
+        .time-range { margin-left: auto; font-family: ui-monospace, monospace; color: var(--accent-cyan); font-size: 0.85rem; background: rgba(56, 189, 248, 0.1); padding: 0.2rem 0.6rem; border-radius: 6px; }
 
-        /* Inline Tips */
-        .inline-tip {
-            margin: 1rem 0 0.5rem 0; padding: 0.75rem 1rem;
-            background: rgba(245, 158, 11, 0.05); border-left: 2px solid rgba(245, 158, 11, 0.4);
-            border-radius: 0 8px 8px 0; font-size: 0.85rem; color: var(--text-muted);
-        }
-        .inline-tip strong { color: var(--accent-amber); font-weight: 600; margin-right: 0.5rem; }
-
-        /* Custom Interactive Action Items */
+        /* Checklist Items */
         .action-item {
-            display: flex; align-items: flex-start; padding: 1rem;
-            background: rgba(255, 255, 255, 0.02); border: 1px solid transparent; border-radius: 12px;
-            cursor: pointer; transition: all 0.2s ease; margin-bottom: 0.75rem;
+            display: flex; align-items: flex-start; padding: 1rem; background: var(--bg-surface);
+            border: 1px solid var(--border-light); border-radius: 12px; cursor: pointer; transition: all 0.2s; margin-bottom: 0.75rem;
         }
-        .action-item:hover { background: rgba(255, 255, 255, 0.04); border-color: var(--border-light); }
+        .action-item:hover { border-color: var(--accent-cyan); }
         .action-item input[type="checkbox"] { display: none; }
         
         .custom-check {
-            width: 22px; height: 22px; border: 2px solid var(--text-muted); border-radius: 6px;
+            width: 24px; height: 24px; border: 2px solid var(--text-muted); border-radius: 6px;
             margin-right: 1rem; margin-top: 2px; position: relative; flex-shrink: 0; transition: all 0.2s;
         }
-        .action-item input[type="checkbox"]:checked + .custom-check {
-            background-color: var(--accent-green); border-color: var(--accent-green); box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
-        }
+        .action-item input[type="checkbox"]:checked + .custom-check { background-color: var(--accent-green); border-color: var(--accent-green); }
         .action-item input[type="checkbox"]:checked + .custom-check::after {
-            content: ''; position: absolute; left: 6px; top: 2px; width: 5px; height: 10px;
-            border: solid var(--bg-base); border-width: 0 2px 2px 0; transform: rotate(45deg);
+            content: ''; position: absolute; left: 7px; top: 3px; width: 6px; height: 11px;
+            border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
         }
-        .action-text { flex: 1; font-size: 0.9rem; color: var(--text-muted); }
-        .action-text strong { display: block; color: var(--text-main); font-size: 0.95rem; margin-bottom: 0.25rem; }
+        .action-text { flex: 1; font-size: 0.9rem; color: var(--text-muted); transition: color 0.3s; }
+        .action-text strong { display: block; color: var(--text-main); font-size: 0.95rem; margin-bottom: 0.25rem; transition: color 0.3s; }
+        .action-item input[type="checkbox"]:checked ~ .action-text { text-decoration: line-through; opacity: 0.6; }
 
-        /* Right Panel: Hydration & Dietary */
-        .telemetry-title {
-            font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem;
-            display: flex; align-items: center; justify-content: space-between;
+        .inline-tip {
+            margin: 1rem 0 0.5rem 0; padding: 0.75rem 1rem; background: rgba(245, 158, 11, 0.05);
+            border-left: 2px solid var(--accent-amber); border-radius: 0 8px 8px 0; font-size: 0.85rem; color: var(--text-muted);
         }
+
+        /* Central Hydration Unit */
+        .telemetry-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem; display: flex; justify-content: space-between; }
+        .big-bottle-wrapper { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; margin-bottom: 1rem; }
         
-        .water-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
-        .bottle {
-            aspect-ratio: 1 / 2; border: 2px solid var(--border-light); border-radius: 12px;
-            position: relative; cursor: pointer; overflow: hidden; background: rgba(0,0,0,0.2); transition: border-color 0.3s;
+        .big-bottle {
+            width: 140px; height: 280px; border: 4px solid var(--border-light); border-radius: 20px 20px 30px 30px;
+            position: relative; overflow: hidden; background: var(--bottle-bg); transition: border-color 0.3s;
         }
-        .bottle:hover { border-color: var(--accent-cyan); }
+        .big-bottle::before { /* Bottle Neck */
+            content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            width: 60px; height: 20px; border: 4px solid var(--border-light); border-bottom: none; border-radius: 10px 10px 0 0;
+        }
         .bottle-liquid {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 0%;
             background: linear-gradient(180deg, var(--accent-cyan) 0%, #0284c7 100%);
-            transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0.9;
+            transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .bottle.filled .bottle-liquid { height: 100%; box-shadow: var(--accent-glow); }
-        .bottle-label {
-            position: absolute; width: 100%; text-align: center; bottom: -25px;
-            font-size: 0.75rem; color: var(--text-muted); font-family: ui-monospace, monospace;
+        .bottle-text {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 1.2rem; font-weight: 700; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            font-family: ui-monospace, monospace; z-index: 2; pointer-events: none;
+        }
+        .sync-btn {
+            width: 100%; justify-content: center; background: rgba(56, 189, 248, 0.1);
+            border-color: var(--accent-cyan); color: var(--accent-cyan);
         }
 
+        /* Modals & Subsystems */
         .data-list { list-style: none; }
-        .data-list li {
-            padding: 0.75rem 0; border-bottom: 1px solid var(--border-light);
-            font-size: 0.85rem; color: var(--text-muted); display: flex; justify-content: space-between;
-        }
+        .data-list li { padding: 0.75rem 0; border-bottom: 1px solid var(--border-light); font-size: 0.85rem; color: var(--text-muted); display: flex; justify-content: space-between; }
         .data-list li:last-child { border-bottom: none; }
         .data-list strong { color: var(--text-main); }
 
-        /* Streaks */
         .streak-container { display: flex; gap: 0.5rem; margin-top: 1rem; }
         .streak-node {
             flex: 1; aspect-ratio: 1; background: var(--bg-surface); border: 1px solid var(--border-light);
             border-radius: 6px; display: grid; place-items: center; font-size: 0.8rem; color: var(--text-muted); transition: all 0.3s;
         }
-        .streak-node.active {
-            background: rgba(16, 185, 129, 0.1); border-color: var(--accent-green);
-            color: var(--accent-green); box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.1);
-        }
+        .streak-node.active { background: rgba(16, 185, 129, 0.1); border-color: var(--accent-green); color: var(--accent-green); }
         .streak-node.today { border: 1px dashed var(--accent-cyan); color: var(--accent-cyan); }
-        .streak-node.today.active { background: var(--accent-green); color: var(--bg-base); border-style: solid; }
+        .streak-node.today.active { background: var(--accent-green); color: #fff; border-style: solid; }
 
-        /* Modal Subsystem */
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(8px);
-            display: none; align-items: center; justify-content: center; z-index: 1000;
-            opacity: 0; transition: opacity 0.3s ease;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; opacity: 0; transition: opacity 0.3s;
         }
         .modal-overlay.open { display: flex; opacity: 1; }
-        .modal-content {
-            background: var(--bg-card); border: 1px solid var(--border-light);
-            padding: 2.5rem; border-radius: 16px; max-width: 700px; width: 90%;
-            max-height: 85vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-            position: relative;
-        }
-        .modal-close {
-            position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none;
-            color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: color 0.2s;
-        }
-        .modal-close:hover { color: var(--text-main); }
-        .modal-section { margin-bottom: 2rem; }
-        .modal-section h2 { font-size: 1.3rem; margin-bottom: 1rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; }
-        .modal-section ul { margin-left: 1.5rem; color: var(--text-muted); font-size: 0.95rem; }
-        .modal-section li { margin-bottom: 0.5rem; }
-        .modal-section li strong { color: var(--text-main); }
+        .modal-content { background: var(--bg-card); border: 1px solid var(--border-light); padding: 2.5rem; border-radius: 16px; max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; position: relative; }
+        .modal-close { position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+        .modal-section h2 { font-size: 1.3rem; margin-bottom: 1rem; color: var(--text-main); }
+        .modal-section ul { margin-left: 1.5rem; color: var(--text-muted); }
         .print-only { display: none; }
 
-        /* Mobile Responsiveness */
-        @media (max-width: 900px) {
-            .grid-layout { grid-template-columns: 1fr; }
-            header { flex-direction: column; align-items: flex-start; }
-            .btn-group { width: 100%; justify-content: flex-start; }
-        }
-
-        /* Print Fallback */
+        @media (max-width: 900px) { .grid-layout { grid-template-columns: 1fr; } }
         @media print {
-            body { background: white; color: black; padding: 0; }
+            body { background: white; color: black; }
             .glass-card { background: white; border: 1px solid #ccc; backdrop-filter: none; box-shadow: none; page-break-inside: avoid; }
-            .action-item { border: 1px solid #eee; margin-bottom: 5px; }
-            .inline-tip { border-left: 2px solid #ccc; background: transparent; color: black; }
-            .btn-group, .streak-container, .modal-overlay { display: none !important; }
-            h1 { -webkit-text-fill-color: black; }
-            /* Reveal hidden modal info for physical print */
-            .print-only { display: block; margin-top: 3rem; }
-            .print-only h2 { font-size: 1.3rem; margin-bottom: 1rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem; }
-            .print-only ul { margin-left: 1.5rem; margin-bottom: 2rem; }
-            .print-only li { margin-bottom: 0.5rem; }
+            .tabs-nav, .header-controls, .modal-overlay { display: none !important; }
+            .tab-content { display: block !important; margin-bottom: 2rem; }
+            .print-only { display: block; margin-top: 2rem; }
+            .action-item input[type="checkbox"]:checked ~ .action-text { text-decoration: none; opacity: 1; }
         }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
-        
         <header>
             <div>
                 <h1>Daily Protocol</h1>
                 <p class="subtitle">Systemic habit tracking & interoception interface</p>
             </div>
-            <div class="btn-group">
-                <button class="btn" onclick="openModal()">📚 Protocol Info</button>
-                <button class="btn" onclick="enableNotifications()">🔔 Enable Alerts</button>
-                <button class="btn" onclick="window.print()">🖨️ Print Log</button>
+            <div class="header-controls">
+                <button class="btn theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙</button>
+                <button class="btn" onclick="openModal()">📚 Info</button>
+                <button class="btn" onclick="window.print()">🖨️ Log</button>
             </div>
         </header>
 
@@ -230,169 +214,100 @@
             
             <!-- LEFT COLUMN: ROUTINE SEQUENCE -->
             <section class="routine-col">
-                
-                <div class="glass-card">
-                    <div class="time-header">
-                        <span class="time-icon">🌅</span>
-                        <span class="time-label">Morning Initialization</span>
-                        <span class="time-range">06:00 - 08:00</span>
-                    </div>
-                    <label class="action-item">
-                        <input type="checkbox" class="action-checkbox">
-                        <div class="custom-check"></div>
-                        <div class="action-text"><strong>1. Wake + Hydrate</strong>Consume 250-300ml immediately upon waking.</div>
-                    </label>
-                    <label class="action-item">
-                        <input type="checkbox" class="action-checkbox">
-                        <div class="custom-check"></div>
-                        <div class="action-text"><strong>2. Dietary Bulk & Support</strong>Ingest pumpkin seeds or prescribed aids to initiate motility.</div>
-                    </label>
-                    <label class="action-item">
-                        <input type="checkbox" class="action-checkbox">
-                        <div class="custom-check"></div>
-                        <div class="action-text"><strong>3. High-Fiber Intake</strong>Oats + fruit | Whole grain + berries | Wheat toast + avocado.</div>
-                    </label>
-                    <label class="action-item">
-                        <input type="checkbox" class="action-checkbox">
-                        <div class="custom-check"></div>
-                        <div class="action-text"><strong>4. Secondary Hydration</strong>Complete ~500ml total intake before standard work block.</div>
-                    </label>
-                    <label class="action-item">
-                        <input type="checkbox" class="action-checkbox">
-                        <div class="custom-check"></div>
-                        <div class="action-text"><strong>5. Restroom Protocol</strong>Sit for 3-5 minutes (Max). Strict no-device policy.</div>
-                    </label>
-                    
-                    <div class="inline-tip">
-                        💡 <strong>ADHD Hack:</strong> Set your water bottle/glass on top of your phone the night before so you HAVE to pick it up and drink before scrolling.
-                    </div>
+                <div class="status-badge" id="active-phase-badge">
+                    <div class="pulse"></div> <span id="phase-text">Awaiting Phase...</span>
+                </div>
+
+                <div class="tabs-nav" id="tabs-container">
+                    <button class="tab-btn" data-target="block-morning" onclick="switchTab('block-morning')">Morning</button>
+                    <button class="tab-btn" data-target="block-midday" onclick="switchTab('block-midday')">Mid-Day</button>
+                    <button class="tab-btn" data-target="block-lunch" onclick="switchTab('block-lunch')">Lunch</button>
+                    <button class="tab-btn" data-target="block-afternoon" onclick="switchTab('block-afternoon')">Afternoon</button>
+                    <button class="tab-btn" data-target="block-evening" onclick="switchTab('block-evening')">Evening</button>
                 </div>
 
                 <div class="glass-card">
-                    <div class="time-header">
-                        <span class="time-icon">☕</span>
-                        <span class="time-label">Deep Work Block 1</span>
-                        <span class="time-range">08:00 - 12:00</span>
+                    <!-- MORNING TAB -->
+                    <div id="block-morning" class="tab-content">
+                        <div class="time-header">
+                            <span class="time-icon">🌅</span>
+                            <span class="time-label">Initialization</span>
+                            <span class="time-range">06:00 - 08:00</span>
+                        </div>
+                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>1. Wake + Hydrate</strong>Consume 250-300ml immediately.</div></label>
+                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>2. Dietary Bulk</strong>Ingest seeds/aids to initiate motility.</div></label>
+                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. High-Fiber Intake</strong>Oats/Fruit | Grain/Berries.</div></label>
+                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>4. Secondary Hydration</strong>Complete ~500ml total before work.</div></label>
+                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>5. Restroom Protocol</strong>3-5 minutes (Max). No devices.</div></label>
+                        <div class="inline-tip">💡 <strong>ADHD Hack:</strong> Phone under water glass at night.</div>
                     </div>
-                    <label class="action-item">
-                        <input type="checkbox" class="action-checkbox">
-                        <div class="custom-check"></div>
-                        <div class="action-text"><strong>1. Visibility Anchor</strong>Stage 1L water container in direct peripheral vision.</div>
-                    </label>
-                    <label class="action-item">
-                        <input type="checkbox" class="action-checkbox">
-                        <div class="custom-check"></div>
-                        <div class="action-text"><strong>2. Paced Hydration</strong>5 structural sips every 60-90m (Refer to system alerts).</div>
-                    </label>
-                    <label class="action-item">
-                        <input type="checkbox" class="action-checkbox">
-                        <div class="custom-check"></div>
-                        <div class="action-text"><strong>3. State Transition Check</strong>Mandatory 2m restroom check before entering hyperfocus.</div>
-                    </label>
-                    
-                    <div class="inline-tip">
-                        💡 <strong>Visual Cue:</strong> Place a physical sticky note on your primary monitor: "Sip water every time you look at this."
+
+                    <!-- MIDDAY TAB -->
+                    <div id="block-midday" class="tab-content">
+                        <div class="time-header">
+                            <span class="time-icon">☕</span>
+                            <span class="time-label">Deep Work Block 1</span>
+                            <span class="time-range">08:00 - 12:00</span>
+                        </div>
+                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>1. Visibility Anchor</strong>Stage 1L container in peripheral vision.</div></label>
+                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>2. Paced Hydration</strong>5 structural sips every 60-90m.</div></label>
+                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. State Transition</strong>2m restroom check before hyperfocus.</div></label>
+                    </div>
+
+                    <!-- LUNCH TAB -->
+                    <div id="block-lunch" class="tab-content">
+                        <div class="time-header">
+                            <span class="time-icon">🍽️</span>
+                            <span class="time-label">Mid-Day Reset</span>
+                            <span class="time-range">12:00 - 13:00</span>
+                        </div>
+                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>1. Pre-meal Hydration</strong>1 full glass strictly before food.</div></label>
+                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>2. Fiber Integration</strong>Legumes, raw vegetables, or fruits.</div></label>
+                    </div>
+
+                    <!-- AFTERNOON TAB -->
+                    <div id="block-afternoon" class="tab-content">
+                        <div class="time-header">
+                            <span class="time-icon">🌤️</span>
+                            <span class="time-label">Deep Work Block 2</span>
+                            <span class="time-range">13:00 - 18:00</span>
+                        </div>
+                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>1. Stage 2 Hydration</strong>Refill container for afternoon.</div></label>
+                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>2. Kinetic Break</strong>15-20 min locomotion for motility.</div></label>
+                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. Functional Snack</strong>Skin-on fruit or grain/seeds.</div></label>
+                    </div>
+
+                    <!-- EVENING TAB -->
+                    <div id="block-evening" class="tab-content">
+                        <div class="time-header">
+                            <span class="time-icon">🌆</span>
+                            <span class="time-label">Wind-Down</span>
+                            <span class="time-range">18:00 - 22:00</span>
+                        </div>
+                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>1. Dinner Composition</strong>Minimum 1 serving of veg/legumes.</div></label>
+                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>2. Hydration Taper</strong>Cease intake 1 hour before sleep.</div></label>
+                        <label class="action-item"><input type="checkbox" class="task-check"><div class="custom-check"></div><div class="action-text"><strong>3. Setup for Tomorrow</strong>Stage morning glass by the bed.</div></label>
+                        <div class="inline-tip">💡 <strong>Phone Rule:</strong> Use physical timer (5m) for evening restroom.</div>
                     </div>
                 </div>
-
-                <div class="glass-card">
-                    <div class="time-header">
-                        <span class="time-icon">🍽️</span>
-                        <span class="time-label">Mid-Day Reset</span>
-                        <span class="time-range">12:00 - 13:00</span>
-                    </div>
-                    <label class="action-item">
-                        <input type="checkbox" class="action-checkbox">
-                        <div class="custom-check"></div>
-                        <div class="action-text"><strong>1. Pre-meal Hydration</strong>Consume 1 full glass strictly before food intake.</div>
-                    </label>
-                    <label class="action-item">
-                        <input type="checkbox" class="action-checkbox">
-                        <div class="custom-check"></div>
-                        <div class="action-text"><strong>2. Whole-Food Fiber Integration</strong>Ensure presence of legumes, raw vegetables, or raw fruits.</div>
-                    </label>
-                </div>
-
-                <div class="glass-card">
-                    <div class="time-header">
-                        <span class="time-icon">🌤️</span>
-                        <span class="time-label">Deep Work Block 2</span>
-                        <span class="time-range">13:00 - 18:00</span>
-                    </div>
-                    <label class="action-item">
-                        <input type="checkbox" class="action-checkbox">
-                        <div class="custom-check"></div>
-                        <div class="action-text"><strong>1. Stage 2 Hydration</strong>Refill container for afternoon focus block.</div>
-                    </label>
-                    <label class="action-item">
-                        <input type="checkbox" class="action-checkbox">
-                        <div class="custom-check"></div>
-                        <div class="action-text"><strong>2. Kinetic Break</strong>15-20 minute locomotion to aid systemic motility.</div>
-                    </label>
-                    <label class="action-item">
-                        <input type="checkbox" class="action-checkbox">
-                        <div class="custom-check"></div>
-                        <div class="action-text"><strong>3. Functional Snack</strong>Skin-on fruit, raw seeds, or grain-based carbohydrates.</div>
-                    </label>
-                </div>
-
-                <div class="glass-card">
-                    <div class="time-header">
-                        <span class="time-icon">🌆</span>
-                        <span class="time-label">Evening Wind-Down</span>
-                        <span class="time-range">18:00 - 22:00</span>
-                    </div>
-                    <label class="action-item">
-                        <input type="checkbox" class="action-checkbox">
-                        <div class="custom-check"></div>
-                        <div class="action-text"><strong>1. Dinner Composition</strong>Minimum 1 serving of cooked vegetables/legumes.</div>
-                    </label>
-                    <label class="action-item">
-                        <input type="checkbox" class="action-checkbox">
-                        <div class="custom-check"></div>
-                        <div class="action-text"><strong>2. Hydration Taper</strong>Gradual fluid intake, ceasing 1 hour before sleep cycle.</div>
-                    </label>
-                    <label class="action-item">
-                        <input type="checkbox" class="action-checkbox">
-                        <div class="custom-check"></div>
-                        <div class="action-text"><strong>3. Setup for Tomorrow</strong>Stage morning glass by the bed. Layout supplements.</div>
-                    </label>
-
-                    <div class="inline-tip">
-                        💡 <strong>Phone Rule:</strong> Leave your device outside the restroom during evening routines. Use a visible timer (watch or kitchen timer) set for 5 minutes maximum.
-                    </div>
-                </div>
-
             </section>
 
-            <!-- RIGHT COLUMN: TELEMETRY & DATA -->
+            <!-- RIGHT COLUMN: TELEMETRY -->
             <aside class="metrics-col">
-                
                 <div class="glass-card" style="margin-bottom: 2.5rem;">
                     <div class="telemetry-title">
-                        <span>Fluid Telemetry</span>
-                        <span style="color: var(--accent-cyan); font-family: monospace;">~3.0L Target</span>
+                        <span>Hydration Unit</span>
+                        <span style="color: var(--accent-cyan); font-family: monospace;">Target: 3000ml</span>
                     </div>
                     
-                    <div class="water-grid">
-                        <div style="position:relative;">
-                            <div class="bottle" onclick="toggleBottle(this, 1000, 0)">
-                                <div class="bottle-liquid"></div>
-                            </div>
-                            <div class="bottle-label">UNIT_1</div>
+                    <div class="big-bottle-wrapper">
+                        <div class="big-bottle">
+                            <div class="bottle-liquid" id="main-liquid"></div>
+                            <div class="bottle-text" id="water-readout">0ml</div>
                         </div>
-                        <div style="position:relative;">
-                            <div class="bottle" onclick="toggleBottle(this, 1000, 1)">
-                                <div class="bottle-liquid"></div>
-                            </div>
-                            <div class="bottle-label">UNIT_2</div>
-                        </div>
-                        <div style="position:relative;">
-                            <div class="bottle" onclick="toggleBottle(this, 1000, 2)">
-                                <div class="bottle-liquid"></div>
-                            </div>
-                            <div class="bottle-label">UNIT_3</div>
-                        </div>
+                        <button class="btn sync-btn" onclick="syncAppleHealth()">
+                            <span id="sync-amount">Sync 0ml to Health</span>
+                        </button>
                     </div>
                 </div>
 
@@ -401,236 +316,226 @@
                     <ul class="data-list">
                         <li><strong>Primary Bulk:</strong> Pumpkin Seeds</li>
                         <li><strong>Raw Fiber:</strong> Apples/Pears (Skin-on)</li>
-                        <li><strong>Cell Repair:</strong> Zinc (15-30mg), Vit-C</li>
-                        <li><strong>Fallback:</strong> Softeners/PEG (As needed)</li>
+                        <li><strong>Cell Repair:</strong> Zinc/Vit-C</li>
                     </ul>
                 </div>
 
                 <div class="glass-card">
-                    <div class="telemetry-title">System Consistency</div>
-                    <div class="streak-container" id="streak-container">
-                        <!-- JS renders 7 nodes here -->
-                    </div>
+                    <div class="telemetry-title">Consistency</div>
+                    <div class="streak-container" id="streak-container"></div>
                 </div>
-
             </aside>
         </main>
 
-        <!-- PRINT ONLY SECTION (Hidden on screen, revealed on paper) -->
+        <!-- PRINT RULES -->
         <div class="print-only">
             <h2>🧠 Core Principles</h2>
             <ul>
-                <li><strong>External cues replace internal signals:</strong> You can't rely on "feeling thirsty" or "feeling the urge".</li>
-                <li><strong>Anchor to actions you already do:</strong> Tie new habits to existing routines.</li>
-                <li><strong>Visual > mental:</strong> Keep water bottle in sight, use timers, check boxes.</li>
-                <li><strong>Short toilet time (≤5 min):</strong> No phone = no prolonged pressure.</li>
-                <li><strong>Soft consistencies = no bleeding:</strong> Everything flows from this.</li>
-            </ul>
-            <h2 style="color: #ef4444; border-bottom-color: #ef4444;">🚨 Medical Escalation Triggers</h2>
-            <ul>
-                <li><strong>Heavy bleeding:</strong> Large clots, bleeding that doesn't stop, blood filling toilet bowl.</li>
-                <li><strong>Severe pain:</strong> Pain that prevents sitting or moving normally.</li>
-                <li><strong>Signs of thrombosis:</strong> Sudden firm, very painful lump at the site.</li>
-                <li><strong>Fever + bleeding:</strong> Could indicate infection.</li>
-                <li><strong>Dizziness/weakness:</strong> Possible anemia from chronic blood loss.</li>
-                <li><strong>No improvement:</strong> After 6-8 weeks despite following this plan consistently.</li>
+                <li>External cues replace internal signals.</li>
+                <li>Short toilet time (≤5 min): No phone.</li>
+                <li>Consistency ensures no aggravation.</li>
             </ul>
         </div>
     </div>
 
-    <!-- MODAL OVERLAY -->
+    <!-- MODAL -->
     <div id="info-modal" class="modal-overlay" onclick="closeModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="modal-close" onclick="closeModal(event)">&times;</button>
-            
             <div class="modal-section">
-                <h2>🧠 Core Principles (Read First)</h2>
+                <h2>🧠 Core Principles</h2>
                 <ul>
-                    <li><strong>External cues replace internal signals:</strong> You can't rely on "feeling thirsty" or "feeling the urge". Your interoception requires external support.</li>
-                    <li><strong>Anchor to actions you already do:</strong> Tie new habits to existing routines (e.g., wake up = drink water).</li>
-                    <li><strong>Visual > mental:</strong> Keep your water bottle in sight at all times. Use timers and check boxes to offload mental tracking.</li>
-                    <li><strong>Short toilet time (≤5 min):</strong> No phone = no prolonged pressure. This is a non-negotiable rule.</li>
-                    <li><strong>Consistency is key:</strong> Managing soft consistencies ensures no bleeding or aggravation. Everything flows from this.</li>
-                </ul>
-            </div>
-
-            <div class="modal-section" style="margin-bottom: 0;">
-                <h2 style="color: var(--accent-red);">🚨 Medical Escalation Triggers</h2>
-                <ul>
-                    <li><strong>Heavy bleeding:</strong> Large clots, bleeding that doesn't stop, or blood filling the bowl.</li>
-                    <li><strong>Severe pain:</strong> Pain that actively prevents sitting or moving normally.</li>
-                    <li><strong>Signs of thrombosis:</strong> Sudden firm, very painful lump at the site.</li>
-                    <li><strong>Fever + bleeding:</strong> Could indicate an active infection.</li>
-                    <li><strong>Dizziness, weakness, pale skin:</strong> Possible anemia from chronic blood loss.</li>
-                    <li><strong>No improvement after 6-8 weeks:</strong> Despite following this plan consistently.</li>
+                    <li><strong>External cues replace internal signals:</strong> Rely on visible triggers.</li>
+                    <li><strong>Anchor to actions you already do:</strong> Tie habits to routines.</li>
+                    <li><strong>Short toilet time (≤5 min):</strong> No phone = no prolonged pressure.</li>
                 </ul>
             </div>
         </div>
     </div>
 
     <script>
-        // --- Core DOM Elements ---
-        const checkboxes = document.querySelectorAll('.action-checkbox');
-        const bottles = document.querySelectorAll('.bottle');
-        const streakContainer = document.getElementById('streak-container');
-        const modal = document.getElementById('info-modal');
+        // --- 1. Atomic State Management ---
+        const checkboxes = document.querySelectorAll('.task-check');
+        const TOTAL_WATER_GOAL = 3000;
+        
+        function loadState() {
+            // Load theme
+            const isLight = localStorage.getItem('theme') === 'light';
+            if (isLight || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+                document.body.classList.add('light-theme');
+                document.getElementById('theme-btn').innerText = '☀️';
+            }
 
-        // --- 1. Initialization & Live Listeners ---
-        function initData() {
-            checkboxes.forEach((checkbox, index) => {
-                const saved = JSON.parse(localStorage.getItem('checkbox_' + index) || 'false');
-                checkbox.checked = saved;
-                
-                checkbox.addEventListener('change', function() {
-                    localStorage.setItem('checkbox_' + index, JSON.stringify(this.checked));
-                    updateLiveTodayProgress();
+            // Load Checkboxes
+            let state = JSON.parse(localStorage.getItem('dailyState')) || {};
+            checkboxes.forEach((cb, index) => {
+                cb.checked = state[`item_${index}`] || false;
+                cb.addEventListener('change', () => {
+                    state[`item_${index}`] = cb.checked;
+                    localStorage.setItem('dailyState', JSON.stringify(state));
+                    updateTelemetry();
                 });
             });
 
-            const bottleStates = JSON.parse(localStorage.getItem('bottleStates') || '[false, false, false]');
-            bottles.forEach((bottle, index) => {
-                if (bottleStates[index]) bottle.classList.add('filled');
-            });
-
             renderStreaks();
-            updateLiveTodayProgress();
+            updateTelemetry();
         }
 
-        // --- 2. Modal Logic ---
-        function openModal() {
-            modal.classList.add('open');
-            document.body.style.overflow = 'hidden'; // Prevent background scrolling
-        }
-
-        function closeModal(event) {
-            modal.classList.remove('open');
-            document.body.style.overflow = '';
-        }
-
-        // --- 3. Live Streak Logic ---
-        function updateLiveTodayProgress() {
-            let completedHabits = 0;
-            checkboxes.forEach((cb) => { if (cb.checked) completedHabits++; });
-            let filledBottles = document.querySelectorAll('.bottle.filled').length;
-
-            const isTodaySuccess = (completedHabits >= 5 && filledBottles >= 1);
+        // --- 2. Central Hydration Telemetry ---
+        function updateTelemetry() {
+            let checked = document.querySelectorAll('.task-check:checked').length;
+            let total = checkboxes.length;
             
+            // Calculate Water (proportional to tasks done)
+            let currentWater = Math.round((checked / total) * TOTAL_WATER_GOAL);
+            let percentage = (checked / total) * 100;
+            
+            // Update UI
+            document.getElementById('main-liquid').style.height = `${percentage}%`;
+            document.getElementById('water-readout').innerText = `${currentWater}ml`;
+            
+            // Apple Health Sync Delta Logic
+            let syncedWater = parseInt(localStorage.getItem('syncedWater')) || 0;
+            let pendingSync = currentWater - syncedWater;
+            
+            const syncBtnText = document.getElementById('sync-amount');
+            if (pendingSync > 0) {
+                syncBtnText.innerText = `Sync +${pendingSync}ml to Health`;
+                syncBtnText.parentElement.style.opacity = '1';
+                syncBtnText.parentElement.style.pointerEvents = 'auto';
+            } else {
+                syncBtnText.innerText = `Health App Up to Date`;
+                syncBtnText.parentElement.style.opacity = '0.5';
+                syncBtnText.parentElement.style.pointerEvents = 'none';
+            }
+
+            // Live Streak Block
             const todayBlock = document.getElementById('today-block');
             if (todayBlock) {
-                if (isTodaySuccess) {
-                    todayBlock.classList.add('active');
-                    todayBlock.innerHTML = '✓';
+                if (checked >= (total * 0.8)) { // 80% marks a successful day
+                    todayBlock.classList.add('active'); todayBlock.innerHTML = '✓';
                 } else {
-                    todayBlock.classList.remove('active');
-                    todayBlock.innerHTML = 'T';
+                    todayBlock.classList.remove('active'); todayBlock.innerHTML = 'T';
                 }
             }
         }
 
-        function renderStreaks() {
-            let streaks = JSON.parse(localStorage.getItem('streakHistory') || '[]');
-            while (streaks.length < 6) streaks.unshift(null); 
-            
-            streakContainer.innerHTML = '';
-            
-            streaks.forEach((daySuccess) => {
-                const div = document.createElement('div');
-                div.className = 'streak-node';
-                if (daySuccess === true) { div.classList.add('active'); div.innerText = '✓'; } 
-                else if (daySuccess === false) { div.innerText = '×'; } 
-                else { div.innerText = '-'; }
-                streakContainer.appendChild(div);
-            });
+        // --- 3. Apple Health Sync Execution ---
+        function syncAppleHealth() {
+            let checked = document.querySelectorAll('.task-check:checked').length;
+            let currentWater = Math.round((checked / checkboxes.length) * TOTAL_WATER_GOAL);
+            let syncedWater = parseInt(localStorage.getItem('syncedWater')) || 0;
+            let pendingSync = currentWater - syncedWater;
 
-            const todayDiv = document.createElement('div');
-            todayDiv.id = 'today-block';
-            todayDiv.className = 'streak-node today';
-            todayDiv.innerText = 'T';
-            streakContainer.appendChild(todayDiv);
-        }
-
-        // --- 4. Apple Health & Bottle Toggles ---
-        function toggleBottle(element, amountMl, index) {
-            const isFilled = element.classList.toggle('filled');
-            
-            let bottleStates = JSON.parse(localStorage.getItem('bottleStates') || '[false, false, false]');
-            bottleStates[index] = isFilled;
-            localStorage.setItem('bottleStates', JSON.stringify(bottleStates));
-            
-            updateLiveTodayProgress();
-
-            if (isFilled) {
+            if (pendingSync > 0) {
                 const isAppleDevice = /Mac|iPhone|iPod|iPad/i.test(navigator.userAgent);
                 if (isAppleDevice) {
                     const shortcutName = "LogWater";
-                    const url = `shortcuts://run-shortcut?name=${shortcutName}&input=${amountMl}`;
+                    const url = `shortcuts://run-shortcut?name=${shortcutName}&input=${pendingSync}`;
+                    
+                    // Mark as synced locally before redirect
+                    localStorage.setItem('syncedWater', currentWater);
+                    updateTelemetry();
+                    
                     setTimeout(() => { window.location.href = url; }, 50);
                 } else {
-                    console.log("Apple Health sync bypassed: Device is not iOS/macOS.");
+                    alert(`Sync bypassed: Not an Apple Device. (Would have logged ${pendingSync}ml)`);
+                    localStorage.setItem('syncedWater', currentWater);
+                    updateTelemetry();
                 }
             }
         }
 
-        // --- 5. Midnight Reset Board Wipe ---
+        // --- 4. Chronometer & Tab Auto-Switch ---
+        function runChronometer() {
+            const hour = new Date().getHours();
+            let activeId = 'block-evening';
+            let phaseName = 'Evening Wind-Down';
+
+            if (hour >= 6 && hour < 8) { activeId = 'block-morning'; phaseName = 'Morning Init'; }
+            else if (hour >= 8 && hour < 12) { activeId = 'block-midday'; phaseName = 'Deep Work 1'; }
+            else if (hour >= 12 && hour < 13) { activeId = 'block-lunch'; phaseName = 'Mid-Day Reset'; }
+            else if (hour >= 13 && hour < 18) { activeId = 'block-afternoon'; phaseName = 'Deep Work 2'; }
+
+            document.getElementById('phase-text').innerText = `Active: ${phaseName}`;
+            
+            // Only auto-switch if user hasn't manually clicked a tab recently
+            if(!window.manualTabOverride) switchTab(activeId);
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`[data-target="${tabId}"]`).classList.add('active');
+            
+            // User initiated click vs auto-switch
+            if(event) window.manualTabOverride = true; 
+        }
+
+        // --- 5. Midnight Reset ---
         function checkReset() {
             const lastReset = localStorage.getItem('lastReset');
             const today = new Date().toDateString();
 
             if (lastReset && lastReset !== today) {
-                let completedHabits = 0;
-                checkboxes.forEach((cb) => { if (cb.checked) completedHabits++; });
-                let filledBottles = JSON.parse(localStorage.getItem('bottleStates') || '[false, false, false]').filter(Boolean).length;
+                let checked = document.querySelectorAll('.task-check:checked').length;
+                let total = checkboxes.length;
+                const yesterdaySuccess = checked >= (total * 0.8);
                 
-                const yesterdaySuccess = (completedHabits >= 5 && filledBottles >= 1);
                 let streaks = JSON.parse(localStorage.getItem('streakHistory') || '[]');
                 streaks.push(yesterdaySuccess);
                 if (streaks.length > 6) streaks.shift();
                 localStorage.setItem('streakHistory', JSON.stringify(streaks));
 
-                checkboxes.forEach((checkbox, index) => {
-                    checkbox.checked = false;
-                    localStorage.setItem('checkbox_' + index, JSON.stringify(false));
-                });
-                bottles.forEach(bottle => bottle.classList.remove('filled'));
-                localStorage.setItem('bottleStates', JSON.stringify([false, false, false]));
-                
+                // Atomic Wipe
+                localStorage.setItem('dailyState', JSON.stringify({}));
+                localStorage.setItem('syncedWater', 0);
                 localStorage.setItem('lastReset', today);
+                
+                // Reset UI visually
+                checkboxes.forEach(cb => cb.checked = false);
                 renderStreaks();
-                updateLiveTodayProgress();
+                updateTelemetry();
+                window.manualTabOverride = false; // reset override
             } else if (!lastReset) {
                 localStorage.setItem('lastReset', today);
             }
         }
 
-        // --- 6. Robust Notifications ---
-        let reminderInterval;
-        function enableNotifications() {
-            if (!("Notification" in window)) {
-                alert("⚠️ Web notifications blocked. On iPhone, 'Add to Home Screen' first.");
-                return;
-            }
-            
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") {
-                    alert("✅ System alerts engaged. Keep dashboard active.");
-                    
-                    if (reminderInterval) clearInterval(reminderInterval);
-                    reminderInterval = setInterval(() => {
-                        new Notification("Hydration Protocol", {
-                            body: "Initiate 5 structural sips and kinetic movement.",
-                            icon: "💧"
-                        });
-                    }, 5400000); 
-                } else {
-                    alert("❌ Alert permission denied.");
-                }
+        // --- 6. Helpers (Streaks, Theme, Modal) ---
+        function renderStreaks() {
+            let streaks = JSON.parse(localStorage.getItem('streakHistory') || '[]');
+            while (streaks.length < 6) streaks.unshift(null); 
+            streakContainer.innerHTML = '';
+            streaks.forEach((daySuccess) => {
+                const div = document.createElement('div');
+                div.className = 'streak-node';
+                if (daySuccess === true) { div.classList.add('active'); div.innerText = '✓'; } 
+                else if (daySuccess === false) { div.innerText = '×'; } else { div.innerText = '-'; }
+                streakContainer.appendChild(div);
             });
+            const todayDiv = document.createElement('div');
+            todayDiv.id = 'today-block'; todayDiv.className = 'streak-node today'; todayDiv.innerText = 'T';
+            streakContainer.appendChild(todayDiv);
         }
 
-        // --- Bootup Sequence ---
-        initData();
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light-theme');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            document.getElementById('theme-btn').innerText = isLight ? '☀️' : '🌙';
+        }
+
+        function openModal() { document.getElementById('info-modal').classList.add('open'); document.body.style.overflow = 'hidden'; }
+        function closeModal(e) { document.getElementById('info-modal').classList.remove('open'); document.body.style.overflow = ''; }
+
+        // --- Bootup ---
+        loadState();
         checkReset();
+        runChronometer();
         setInterval(checkReset, 60000); 
+        setInterval(runChronometer, 60000); 
 
     </script>
 </body>
